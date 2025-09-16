@@ -1,9 +1,13 @@
 #!/bin/bash
 echo "Setting up GUI environment for GitHub Codespaces..."
 
-# Install dependencies
+# Install dependencies (use snap for Chromium as required by system)
 sudo apt update
-sudo apt install -y chromium-browser xvfb x11vnc fluxbox websockify novnc
+sudo apt install -y xvfb x11vnc fluxbox websockify novnc
+
+# Install Chromium via snap (as required by the system)
+echo "Installing Chromium via snap..."
+sudo snap install chromium
 
 # Start virtual display
 echo "Starting virtual display..."
