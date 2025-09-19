@@ -36,13 +36,16 @@ if ! command -v chromium &> /dev/null; then
     rm -f chromium*.deb
 fi
 
-echo "Starting Openbox..."
-DISPLAY=:1 openbox-session &
+echo "Starting desktop session..."
+cat > ~/.xinitrc <<EOF
+#!/bin/bash
+openbox-session &
+pcmanfm --desktop &
+chromium --no-sandbox --disable-dev-shm-usage --start-maximized &
+EOF
+chmod +x ~/.xinitrc
 
-echo "Launching Chromium..."
-DISPLAY=:1 chromium --no-sandbox --disable-dev-shm-usage --start-maximized &
+DISPLAY=:1 startxfce4 2>/dev/null || DISPLAY=:1 ~/.xinitrc &
 
-echo "Starting File Manager..."
-DISPLAY=:1 pcmanfm &
-
+echo "✅ Startup complete. Connect via port 6080."
 tail -f /dev/null
