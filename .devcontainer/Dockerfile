@@ -13,7 +13,8 @@ WORKDIR /app
 # Link index.html → noVNC entrypoint
 RUN ln -s /usr/share/novnc/vnc.html /app/index.html || true
 
-COPY ../startup.sh /app/startup.sh
+# Copy startup script from repo root into container
+COPY startup.sh /app/startup.sh
 RUN chmod +x /app/startup.sh
 
 EXPOSE 6080
