@@ -1,17 +1,15 @@
 {
-  "name": "Chromium + File Manager (Codespaces)",
+  "name": "Chromium Emulator",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "context": ".."
   },
-  "forwardPorts": [6080],
   "customizations": {
     "vscode": {
-      "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash"
-      },
-      "extensions": [
-        "ms-azuretools.vscode-docker"
-      ]
+      "settings": {},
+      "extensions": []
     }
-  }
+  },
+  "forwardPorts": [6080],
+  "postCreateCommand": "chmod +x /app/startup.sh"
 }
