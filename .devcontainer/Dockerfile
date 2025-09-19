@@ -13,7 +13,7 @@ WORKDIR /app
 # Link index.html → noVNC entrypoint
 RUN ln -s /usr/share/novnc/vnc.html /app/index.html
 
-COPY startup.sh /app/startup.sh
+COPY ../startup.sh /app/startup.sh
 RUN chmod +x /app/startup.sh
 
 EXPOSE 6080
