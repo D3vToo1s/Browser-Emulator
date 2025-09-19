@@ -16,6 +16,9 @@ tigervncserver :1 -geometry 1280x800 -depth 24
 echo "Starting noVNC..."
 /usr/share/novnc/utils/launch.sh --vnc localhost:5901 --listen 6080 &
 
+# Remove snap chromium wrapper (conflicts in Codespaces)
+apt-get remove -y chromium-browser || true
+
 # Ensure Chromium exists
 if ! command -v chromium &> /dev/null; then
     echo "Installing Chromium (Debian build)..."
