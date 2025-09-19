@@ -2,8 +2,8 @@
 set -e
 
 # Fix locale warnings
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
 
 echo "Cleaning up old VNC sessions..."
 vncserver -kill :1 > /dev/null 2>&1 || true
@@ -16,36 +16,33 @@ tigervncserver :1 -geometry 1280x800 -depth 24
 echo "Starting noVNC..."
 /usr/share/novnc/utils/launch.sh --vnc localhost:5901 --listen 6080 &
 
-# Remove snap chromium wrapper (conflicts in Codespaces)
-apt-get remove -y chromium-browser || true
-
-# Ensure Chromium exists
-if ! command -v chromium &> /dev/null; then
-    echo "Installing Chromium (Debian build)..."
+# Desktop environment (XFCE)
+if ! dpkg -l | grep -q xfce4; then
+    echo "Installing XFCE4 desktop..."
     apt-get update
-    apt-get install -y wget libnss3 libxss1 libasound2 libatk1.0-0 libatk-bridge2.0-0 \
-                       libcups2 libdrm2 libxkbcommon0 libgtk-3-0 libgbm1 libxdamage1 \
-                       libxfixes3 libxcomposite1 libxrandr2 fonts-liberation
-
-    cd /tmp
-    wget -q http://ftp.us.debian.org/debian/pool/main/c/chromium/chromium_116.0.5845.96-1_amd64.deb
-    wget -q http://ftp.us.debian.org/debian/pool/main/c/chromium/chromium-common_116.0.5845.96-1_amd64.deb
-    wget -q http://ftp.us.debian.org/debian/pool/main/c/chromium/chromium-sandbox_116.0.5845.96-1_amd64.deb
-
-    dpkg -i chromium*.deb || apt-get -f install -y
-    rm -f chromium*.deb
+    DEBIAN_FRONTEND=noninteractive apt-get install -y xfce4 xfce4-terminal
 fi
 
-echo "Starting desktop session..."
-cat > ~/.xinitrc <<EOF
-#!/bin/bash
-openbox-session &
-pcmanfm --desktop &
-chromium --no-sandbox --disable-dev-shm-usage --start-maximized &
+# Chromium (Ubuntu's ungoogled Chromium build)
+if ! command -v chromium &> /dev/null && ! command -v chromium-browser &> /dev/null; then
+    echo "Installing Chromium..."
+    apt-get update
+    apt-get install -y chromium-browser || apt-get install -y chromium
+fi
+
+# Create autostart entry to launch Chromium
+mkdir -p ~/.config/autostart
+cat > ~/.config/autostart/chromium.desktop <<EOF
+[Desktop Entry]
+Type=Application
+Exec=chromium --no-sandbox --disable-dev-shm-usage --start-maximized
+Hidden=false
+X-GNOME-Autostart-enabled=true
+Name=Chromium
 EOF
-chmod +x ~/.xinitrc
 
-DISPLAY=:1 startxfce4 2>/dev/null || DISPLAY=:1 ~/.xinitrc &
+echo "Starting XFCE4 session..."
+DISPLAY=:1 startxfce4 &
 
-echo "✅ Startup complete. Connect via port 6080."
+echo "✅ Startup complete. Open noVNC at port 6080."
 tail -f /dev/null
