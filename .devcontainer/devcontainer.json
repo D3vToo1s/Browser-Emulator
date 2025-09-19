@@ -1,0 +1,5 @@
+{
+  "name": "Chromium-Emulator (Codespaces)",
+  "dockerFile": "Dockerfile",
+  "forwardPorts": [6080]
+}
