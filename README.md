@@ -12,5 +12,5 @@ inside **GitHub Codespaces**, accessible through your browser.
 
 ## 🛠 Features
 - Chromium with full UI 
-- PCManFM file manager for selecting unpacked extension folders
+- PCManFM file manager for selecting downloaded files
 
