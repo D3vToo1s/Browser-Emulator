@@ -11,7 +11,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 WORKDIR /app
 
 # Link index.html → noVNC entrypoint
-RUN ln -s /usr/share/novnc/vnc.html /app/index.html
+RUN ln -s /usr/share/novnc/vnc.html /app/index.html || true
 
 COPY ../startup.sh /app/startup.sh
 RUN chmod +x /app/startup.sh
