@@ -5,23 +5,25 @@ set -e
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# Start VNC server if not already running
-if ! pgrep -x Xtigervnc > /dev/null; then
-    echo "Starting VNC server..."
-    tigervncserver :1 -geometry 1280x800 -depth 24
-else
-    echo "VNC server already running."
-fi
+echo "Cleaning up old VNC sessions..."
+vncserver -kill :1 > /dev/null 2>&1 || true
+rm -rf /tmp/.X1-lock /tmp/.X11-unix/X1
+
+# Start fresh VNC server
+echo "Starting VNC server..."
+tigervncserver :1 -geometry 1280x800 -depth 24
 
 # Start noVNC
 echo "Starting noVNC on port 6080..."
-/usr/share/novnc/utils/novnc_proxy --vnc localhost:5901 --listen 6080 &
-NOVNC_PID=$!
+/usr/share/novnc/utils/launch.sh --vnc localhost:5901 --listen 6080 &
 
-# Check if Chromium is installed
+# Start Openbox
+echo "Starting Openbox..."
+openbox-session &
+
+# Install Chromium if missing
 if ! command -v chromium &> /dev/null; then
     echo "Chromium not found. Installing..."
-
     apt-get update
     apt-get install -y wget libnss3 libxss1 libasound2 libatk1.0-0 libatk-bridge2.0-0 \
                        libcups2 libdrm2 libxkbcommon0 libgtk-3-0 libgbm1 libxdamage1 \
@@ -36,13 +38,9 @@ if ! command -v chromium &> /dev/null; then
     rm -f chromium*.deb
 fi
 
-# Start Openbox session
-echo "Starting Openbox..."
-openbox-session &
-
 # Launch Chromium
 echo "Launching Chromium..."
-chromium --no-sandbox --disable-dev-shm-usage &
+chromium --no-sandbox --disable-dev-shm-usage --start-fullscreen &
 
-# Keep container running
-wait $NOVNC_PID
+# Keep container alive
+tail -f /dev/null
