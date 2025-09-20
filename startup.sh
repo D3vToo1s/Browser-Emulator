@@ -6,7 +6,7 @@ vncserver -kill :1 > /dev/null 2>&1 || true
 rm -rf /tmp/.X1-lock /tmp/.X11-unix/X1
 
 echo "Starting environment with supervisord..."
-supervisord -c ~/supervisord.conf
+supervisord -c /workspaces/Chromium-Emulator/supervisord.conf
 
 echo "Navigate to:"
 echo "👉 http://127.0.0.1:6080/vnc.html"
